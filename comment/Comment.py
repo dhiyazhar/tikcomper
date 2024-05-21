@@ -78,8 +78,8 @@ class Comment:
 
         return self.__result
 
-    def to_csv(self, output_dir: str, videoid: str):
-        csv_file_path = f'{output_dir}/{videoid}.csv'
+    def to_csv(self, output_file: str, videoid: str):
+        csv_file_path = f'{output_file}.csv'
         with open(csv_file_path, mode='w', newline='', encoding='utf-8') as csv_file:
             fieldnames = ['username', 'nickname', 'comment', 'create_time', 'avatar', 'total_reply', 'is_reply']
             writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
