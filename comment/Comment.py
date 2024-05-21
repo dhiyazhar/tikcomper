@@ -37,7 +37,8 @@ class Comment:
         new_comments: list = []
 
         for comment in comments:
-            if(comment['share_info']['desc']): logging.info(comment['share_info']['desc'])
+            if comment['share_info']['desc']:
+                logging.info(comment['share_info']['desc'])
 
             new_comment = {
                 "username": comment['user']['unique_id'],
@@ -46,10 +47,16 @@ class Comment:
                 'create_time': self.__format_date(comment['create_time']),
                 "avatar": comment['user']['avatar_thumb']['url_list'][0],
                 "total_reply": comment.get('reply_comment_total', 0),
-                "replies": self.__get_replies(comment['cid']) if comment.get('reply_comment_total', 0) > 0 else [] 
+                "is_reply": False  
             }
 
             new_comments.append(new_comment)
+
+            if comment.get('reply_comment_total', 0) > 0:
+                replies = self.__get_replies(comment['cid'])
+                for reply in replies:
+                    reply['is_reply'] = True 
+                    new_comments.append(reply)
 
         return new_comments
 
@@ -74,7 +81,7 @@ class Comment:
     def to_csv(self, output_dir: str, videoid: str):
         csv_file_path = f'{output_dir}/{videoid}.csv'
         with open(csv_file_path, mode='w', newline='', encoding='utf-8') as csv_file:
-            fieldnames = ['username', 'nickname', 'comment', 'create_time', 'avatar', 'total_reply', 'replies']
+            fieldnames = ['username', 'nickname', 'comment', 'create_time', 'avatar', 'total_reply', 'is_reply']
             writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
 
             writer.writeheader()
@@ -86,7 +93,7 @@ class Comment:
                     'create_time': comment['create_time'],
                     'avatar': comment['avatar'],
                     'total_reply': comment['total_reply'],
-                    'replies': comment['replies']
+                    'is_reply': comment['is_reply']
                 })
 
         logging.info(f'Output CSV data : {csv_file_path}')
