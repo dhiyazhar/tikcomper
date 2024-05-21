@@ -32,10 +32,14 @@ if __name__ == '__main__':
         if data:
             dummy = data
             json_full += data['comments']
-            all_comments.extend(data['comments'])  
-            
-            with open(f'{args.output}/{videoid}_{i * 50}-{(i + 1) * 50}.json', 'w') as file:
+            all_comments.extend(data['comments'])
+
+            output_dir = os.path.join(args.output, videoid)
+            os.makedirs(output_dir, exist_ok=True)
+
+            json_file_path = os.path.join(output_dir, f'{i * 50}-{(i + 1) * 50}.json')
+            with open(json_file_path, 'w') as file:
                 file.write(dumps(data, ensure_ascii=False, indent=2))
-                logging.info(f'Output data : {args.output}/{videoid}_{i * 50}-{(i + 1) * 50}.json')
+                logging.info(f'Output data : {json_file_path}')
 
     comment.to_csv(args.output, videoid, all_comments)
