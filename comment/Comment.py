@@ -78,14 +78,15 @@ class Comment:
 
         return self.__result
 
-    def to_csv(self, output_file: str, videoid: str):
+    def to_csv(self, output_file: str, videoid: str, all_comments: list):
         csv_file_path = f'{output_file}.csv'
         with open(csv_file_path, mode='w', newline='', encoding='utf-8') as csv_file:
             fieldnames = ['username', 'nickname', 'comment', 'create_time', 'avatar', 'total_reply', 'is_reply']
             writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
 
             writer.writeheader()
-            for comment in self.__result['comments']:
+            comment_count = 0
+            for comment in all_comments:
                 writer.writerow({
                     'username': comment['username'],
                     'nickname': comment['nickname'],
@@ -93,10 +94,11 @@ class Comment:
                     'create_time': comment['create_time'],
                     'avatar': comment['avatar'],
                     'total_reply': comment['total_reply'],
-                    'is_reply': comment['is_reply']
+                    'is_reply': comment.get('is_reply', False)
                 })
+                comment_count += 1
 
-        logging.info(f'Output CSV data : {csv_file_path}')
+        logging.info(f'Output CSV data : {csv_file_path} with {comment_count} comments')
 
 # testing
 if __name__ == '__main__':
